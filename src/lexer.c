@@ -28,8 +28,8 @@ void __backward() {
 }
 
 void fail() {
-    printf("Lex error\n");
-    exit(0);
+    //printf("Lex error\n");
+    //exit(0);
 }
 
 int __lexeme_length() {
