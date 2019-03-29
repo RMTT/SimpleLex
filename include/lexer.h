@@ -1,5 +1,5 @@
-#ifndef LEXER_H_INCLUDED
-#define LEXER_H_INCLUDED
+#ifndef SIMPLELEX_LEXER_H
+#define SIMPLELEX_LEXER_H
 
 #include <string>
 #include <iostream>
@@ -141,4 +141,4 @@ namespace Lex {
     };
 }
 
-#endif // LEXER_H_INCLUDED
+#endif // SIMPLELEX_LEXER_H

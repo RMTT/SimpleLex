@@ -7,11 +7,13 @@
 int main() {
     std::ifstream fin("test.txt");
     Lex::initiation(fin.rdbuf());
+
     Lex::Lexer lexer;
     while (!Lex::FINISH) {
         Lex::Token token = lexer.next_token();
         if (token.type != 11)
             std::cout << "Token: " << token.type << "\nvalue: " << token.name << std::endl;
     }
+    fin.close();
     return 0;
 }

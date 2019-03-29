@@ -7,8 +7,8 @@ namespace Lex {
 
     std::istream __in(nullptr);
 
-    char *forward = BUFFER_L_PTR;
-    char *lexeme_begin = BUFFER_L_PTR;
+    char *forward = BUFFER;
+    char *lexeme_begin = BUFFER;
 
     Symbols KEYS;
 

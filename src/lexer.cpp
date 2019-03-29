@@ -33,15 +33,28 @@ namespace Lex {
         KEYS.insert("for", Symbol_Info{
                 TOKEN_KEY
         });
-
         KEYS.insert("void", Symbol_Info{
+                TOKEN_KEY
+        });
+        KEYS.insert("int", Symbol_Info{
+                TOKEN_KEY
+        });
+        KEYS.insert("double", Symbol_Info{
+                TOKEN_KEY
+        });
+        KEYS.insert("char", Symbol_Info{
                 TOKEN_KEY
         });
     }
 
-    void __load_data_from_input(char_t *dest, size_t len) {
-        for (int i = 0; i < len and *dest != EOF; i++)
-            *dest++ = static_cast<char>(__in.get());
+    void __load_data_from_input(char_t *dest, unsigned int len) {
+        char_t c;
+        for (unsigned int i = 0; i < len; i++) {
+            c = static_cast<char_t >(__in.get());
+            *dest++ = c;
+            if (c == EOF)
+                break;
+        }
     }
 
     void __load_stream(int_t which_buffer) {
@@ -58,11 +71,12 @@ namespace Lex {
     }
 
     void __forward() {
+        BUFFER_POSITION++;
         if (current_character == '\n') {
             BUFFER_LINE++;
             BUFFER_POSITION = 1;
         }
-        BUFFER_POSITION++;
+
         switch (next_character) {
             case EOF:
                 if (forward == BUFFER_M_PTR) {
@@ -78,15 +92,6 @@ namespace Lex {
             default:
                 break;
         }
-    }
-
-    void __backward() {
-        if (forward == BUFFER_L_PTR)
-            forward = BUFFER_R_PTR - 1;
-        else if (forward == BUFFER_M_PTR + 1)
-            forward = BUFFER_M_PTR - 1;
-        else
-            forward--;
     }
 
     bool_t __blank() {
@@ -153,7 +158,7 @@ namespace Lex {
                     token.type = TOKEN_KEY;
                 else
                     token.type = TOKEN_ID;
-                __backward();
+
                 break;
             }
             token.name += current_character;
@@ -168,7 +173,6 @@ namespace Lex {
         Token token;
 
         while (true) {
-            std::cout << state << "\n";
             switch (state) {
                 case 0:
                     if (number)
@@ -199,6 +203,7 @@ namespace Lex {
                         state = 4;
                     else
                         state = 9;
+                    break;
                 case 4:
                     if (current_character == '+' || current_character == '-')
                         state = 5;
@@ -212,24 +217,24 @@ namespace Lex {
                         state = 6;
                     else
                         fail();
+                    break;
                 case 6:
                     if (number)
                         state = 6;
                     else
                         state = 7;
+                    break;
                 default:
                     break;
             }
 
             if (state == 7) {
                 token.type = TOKEN_NUMBER_R;
-                __backward();
                 break;
             }
 
             if (state == 8) {
                 token.type = TOKEN_NUMBER_Z;
-                __backward();
                 break;
             }
 
@@ -285,43 +290,36 @@ namespace Lex {
 
             if (state == 9) {
                 token.type = TOKEN_RELOP_EQ;
-                __backward();
                 break;
             }
 
             if (state == 10) {
                 token.type = TOKEN_ASSIGN;
-                __backward();
                 break;
             }
 
             if (state == 2) {
                 token.type = TOKEN_RELOP_LE;
-                __backward();
                 break;
             }
 
             if (state == 3) {
                 token.type = TOKEN_RELOP_NE;
-                __backward();
                 break;
             }
 
             if (state == 4) {
                 token.type = TOKEN_RELOP_LT;
-                __backward();
                 break;
             }
 
             if (state == 7) {
                 token.type = TOKEN_RELOP_GE;
-                __backward();
                 break;
             }
 
             if (state == 8) {
                 token.type = TOKEN_RELOP_GT;
-                __backward();
                 break;
             }
 
@@ -353,7 +351,6 @@ namespace Lex {
             }
             if (state == 2) {
                 token.type = TOKEN_BLANK;
-                __backward();
                 break;
             }
             token.name += current_character;
@@ -375,6 +372,7 @@ namespace Lex {
                 token.type = TOKEN_BRACE;
         } else
             fail();
+        __forward();
         return token;
     }
 
@@ -393,7 +391,7 @@ namespace Lex {
             token = braces_or_brackets();
         else
             fail();
-        __forward();
+       // __forward();
         lexeme_begin = forward;
         return token;
     }
