@@ -1,32 +1,34 @@
 #ifndef LEXER_H_INCLUDED
 #define LEXER_H_INCLUDED
 
+#include <string>
+#include <iostream>
+#include <fstream>
+#include <map>
 
-#include <stdlib.h>
+
+namespace Lex {
+    typedef char char_t;
+    typedef short token_type_t;
+    typedef int int_t;
+    typedef bool bool_t;
 
 #define MAX_BUFFER_SIZE 2048
+#define REAL_BUFFER_SIZE (2 * MAX_BUFFER_SIZE + 2)
 
-extern char BUFFER[2 * MAX_BUFFER_SIZE + 2];
+    extern char_t BUFFER[REAL_BUFFER_SIZE];
+    extern bool_t FINISH;
+    extern int_t BUFFER_LINE;
+    extern int_t BUFFER_POSITION;
+#define BUFFER_L_PTR (BUFFER)
+#define BUFFER_M_PTR (BUFFER + MAX_BUFFER_SIZE)
+#define BUFFER_R_PTR (BUFFER + REAL_BUFFER_SIZE - 1)
 
-#define L MAX_BUFFER_SIZE
-#define R 2 * MAX_BUFFER_SIZE + 1
-
-extern char *forward;
-extern char *lexeme_begin;
-
-extern const char *RELOP_LE;
-extern const char *RELOP_NE;
-extern const char *RELOP_LT;
-extern const char *RELOP_EQ;
-extern const char *RELOP_GE;
-extern const char *RELOP_GT;
-extern const char *ASSIGN;
-
-extern short FINISH;
 
 #define TOKEN_ID 1
 #define TOKEN_KEY 0
-#define TOKEN_NUMBER 2
+#define TOKEN_NUMBER_Z 2
+#define TOKEN_NUMBER_R 12
 #define TOKEN_STR 3
 #define TOKEN_RELOP_LE 4
 #define TOKEN_RELOP_NE 5
@@ -36,42 +38,107 @@ extern short FINISH;
 #define TOKEN_RELOP_GT 9
 #define TOKEN_ASSIGN 10
 #define TOKEN_BLANK 11
+#define TOKEN_BRACE 13
+#define TOKEN_M_BRACKETS 14
+#define TOKEN_BRACKETS 15
 
-struct Token {
-    short type;
-    char *name;
-};
+    struct Token {
+        token_type_t type;
 
-#define INIT_SUCCESS 0
+        std::string name;
+    };
 
-extern short lexer_init();
+    extern char_t *forward;
+    extern char_t *lexeme_begin;
 
-#define HAVE_TOKEN 0
+#define current_character (*forward)
+#define next_character (*++forward)
 
-extern short get_next_token(struct Token *);
+    extern void __forward();
+
+    extern void __backward();
+
+#define BUFFER_LEFT 0
+#define BUFFER_RIGHT 1
+
+    extern std::istream __in;
+
+    extern void __load_stream(int_t which_buffer);
+
+    class Lexer;
+
+    class Symbols;
+
+    extern Symbols KEYS;
+
+    extern void const initiation(std::basic_streambuf<char_t> *);
+
+#define letter __letter()
+
+    extern bool_t __letter();
+
+#define number __number()
+
+    extern bool_t __number();
+
+#define blank __blank()
+
+    extern bool_t __blank();
+
+#define space __space()
+
+    extern bool_t __space();
+
+#define relop __relop()
+
+    extern bool_t __relop();
+
+#define brace __brace()
+
+    bool_t __brace();
+
+#define brackets __brackets()
+
+    bool_t __brackets();
+
+#define m_brackets __m_brackets()
+
+    bool_t __m_brackets();
 
 
-extern void fail();
+    class Lexer {
+    public:
+        Lexer() = default;
 
-#define letter isalpha(*forward)
-#define digit isdigit(*forward)
-#define blank isblank(*forward)
-#define space isspace(*forward)
-#define dot *forward == '.'
-#define E *forward == 'E'
-#define lexeme_length __lexeme_length()
-#define or ||
-#define and &&
-#define is ==
+        void fail();
 
-extern void id_and_keyword_token(struct Token *);
+        struct Token id_or_key();
 
-extern void number_token(struct Token *);
+        struct Token digit();
 
-extern void blank_token(struct Token *token);
+        struct Token comparison_or_assign();
 
-extern int __lexeme_length();
+        struct Token blank_or_space();
 
-extern void relop_token(struct Token *);
+        struct Token braces_or_brackets();
+
+        struct Token next_token();
+    };
+
+    struct Symbol_Info {
+        token_type_t type;
+    };
+
+    class Symbols {
+    private:
+        std::map<std::string, struct Symbol_Info> table;
+    public:
+        Symbols() = default;
+
+        void insert(std::string id, struct Symbol_Info);
+
+        bool_t have(std::string id);
+    };
+}
 
 #endif // LEXER_H_INCLUDED
