@@ -1,16 +1,17 @@
 #include "lexer.h"
 
 namespace Lex {
+    Symbols KEYS;
+
     char_t BUFFER[REAL_BUFFER_SIZE];
+
     int_t BUFFER_LINE = 1;
     int_t BUFFER_POSITION = 1;
-
-    std::istream __in(nullptr);
 
     char *forward = BUFFER;
     char *lexeme_begin = BUFFER;
 
-    Symbols KEYS;
+    std::istream __in(nullptr);
 
     bool_t FINISH = 0;
 }

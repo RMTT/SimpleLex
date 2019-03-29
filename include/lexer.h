@@ -54,9 +54,8 @@ namespace Lex {
 #define current_character (*forward)
 #define next_character (*++forward)
 
+#define NEWLINE '\n'
     extern void __forward();
-
-    extern void __backward();
 
 #define BUFFER_LEFT 0
 #define BUFFER_RIGHT 1

@@ -72,7 +72,7 @@ namespace Lex {
 
     void __forward() {
         BUFFER_POSITION++;
-        if (current_character == '\n') {
+        if (current_character == NEWLINE) {
             BUFFER_LINE++;
             BUFFER_POSITION = 1;
         }
@@ -88,6 +88,7 @@ namespace Lex {
                 } else {
                     // handled all text
                     FINISH = 1;
+                    __in.clear();
                 }
             default:
                 break;
@@ -288,6 +289,8 @@ namespace Lex {
                     break;
             }
 
+            token.name += current_character;
+            __forward();
             if (state == 9) {
                 token.type = TOKEN_RELOP_EQ;
                 break;
@@ -322,9 +325,6 @@ namespace Lex {
                 token.type = TOKEN_RELOP_GT;
                 break;
             }
-
-            token.name += current_character;
-            __forward();
         }
         return token;
     }
@@ -391,7 +391,7 @@ namespace Lex {
             token = braces_or_brackets();
         else
             fail();
-       // __forward();
+        // __forward();
         lexeme_begin = forward;
         return token;
     }
