@@ -55,6 +55,7 @@ namespace Lex {
 #define next_character (*++forward)
 
 #define NEWLINE '\n'
+
     extern void __forward();
 
 #define BUFFER_LEFT 0
@@ -104,6 +105,9 @@ namespace Lex {
 
     bool_t __m_brackets();
 
+#define quotation __quotation()
+
+    bool_t __quotation();
 
     class Lexer {
     public:
@@ -120,6 +124,8 @@ namespace Lex {
         struct Token blank_or_space();
 
         struct Token braces_or_brackets();
+
+        struct Token str();
 
         struct Token next_token();
     };

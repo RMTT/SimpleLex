@@ -8,8 +8,8 @@ namespace Lex {
     int_t BUFFER_LINE = 1;
     int_t BUFFER_POSITION = 1;
 
-    char *forward = BUFFER;
-    char *lexeme_begin = BUFFER;
+    char_t *forward = BUFFER;
+    char_t *lexeme_begin = BUFFER;
 
     std::istream __in(nullptr);
 

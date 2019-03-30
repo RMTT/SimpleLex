@@ -45,6 +45,9 @@ namespace Lex {
         KEYS.insert("char", Symbol_Info{
                 TOKEN_KEY
         });
+        KEYS.insert("return", Symbol_Info{
+                TOKEN_KEY
+        });
     }
 
     void __load_data_from_input(char_t *dest, unsigned int len) {
@@ -127,6 +130,10 @@ namespace Lex {
         return current_character == '>' ||
                current_character == '=' ||
                current_character == '<';
+    }
+
+    bool_t __quotation() {
+        return current_character == '"';
     }
 
     void Lexer::fail() {
@@ -376,6 +383,39 @@ namespace Lex {
         return token;
     }
 
+    struct Token Lexer::str() {
+        int state = 0;
+        Token token;
+
+        while (true) {
+            switch (state) {
+                case 0:
+                    if (quotation)
+                        state = 1;
+                    else
+                        fail();
+                    break;
+                case 1:
+                    if (quotation)
+                        state = 2;
+                    else
+                        state = 1;
+                    break;
+                default:
+                    break;
+            }
+            if (!quotation)
+                token.name += current_character;
+            if (state == 2) {
+                __forward();
+                token.type = TOKEN_STR;
+                break;
+            }
+            __forward();
+        }
+        return token;
+    }
+
     struct Token Lexer::next_token() {
         Token token;
 
@@ -389,12 +429,15 @@ namespace Lex {
             token = blank_or_space();
         else if (brackets or m_brackets or brace)
             token = braces_or_brackets();
+        else if (quotation)
+            token = str();
         else
             fail();
         // __forward();
         lexeme_begin = forward;
         return token;
     }
+
 
     void Symbols::insert(std::string id, struct Symbol_Info info) {
         table[id] = info;
