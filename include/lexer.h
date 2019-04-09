@@ -41,6 +41,7 @@ namespace Lex {
 #define TOKEN_BRACE 13
 #define TOKEN_M_BRACKETS 14
 #define TOKEN_BRACKETS 15
+#define TOKEN_ARITHMETIC 16
 
     struct Token {
         token_type_t type;
@@ -109,6 +110,10 @@ namespace Lex {
 
     bool_t __quotation();
 
+#define arithmetic __arithmetic()
+
+    bool_t __arithmetic();
+
     class Lexer {
     public:
         Lexer() = default;
@@ -126,6 +131,8 @@ namespace Lex {
         struct Token braces_or_brackets();
 
         struct Token str();
+
+        struct Token arithmetic_t();
 
         struct Token next_token();
     };

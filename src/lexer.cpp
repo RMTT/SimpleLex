@@ -136,6 +136,13 @@ namespace Lex {
         return current_character == '"';
     }
 
+    bool_t __arithmetic() {
+        return current_character == '+' ||
+               current_character == '-' ||
+               current_character == '/' ||
+               current_character == '*';
+    }
+
     void Lexer::fail() {
         std::cout << "Lexer occurred error at " << "line " << BUFFER_LINE << ", position " << BUFFER_POSITION << " !"
                   << "\n";
@@ -416,6 +423,14 @@ namespace Lex {
         return token;
     }
 
+    struct Token Lexer::arithmetic_t() {
+        Token token;
+        token.name += current_character;
+        token.type = TOKEN_ARITHMETIC;
+        __forward();
+        return token;
+    }
+
     struct Token Lexer::next_token() {
         Token token;
 
@@ -431,9 +446,11 @@ namespace Lex {
             token = braces_or_brackets();
         else if (quotation)
             token = str();
+        else if (arithmetic)
+            token = arithmetic_t();
         else
             fail();
-        // __forward();
+
         lexeme_begin = forward;
         return token;
     }
